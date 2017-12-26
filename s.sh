@@ -1,5 +1,3 @@
-[[ -f ~/.bashrc ]] && . ~/.bashrc
-
 if [[ $(tty) == *"1" ]]; then
 	echo "      :)"
 	k=(Q S D F G H J K L M A Z E R T Y U I O P)
