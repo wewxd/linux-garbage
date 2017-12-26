@@ -1,6 +1,6 @@
-if [[ $(tty) == *"1" ]]; then
-	echo "      :)"
-	k=(Q S D F G H J K L M A Z E R T Y U I O P)
+if [[ $(tty) == *'1' ]]; then
+	echo '      :)'
+	k=(Q S D F G H J K L M)
 	a=($(ls /usr/share/xsessions))
 	for i in "${!a[@]}"; do
 		echo "${k[$i]}: ${a[$i]::-8}"
@@ -8,8 +8,8 @@ if [[ $(tty) == *"1" ]]; then
 	read -n1 -rsp 'anything else: none' c
 	for ((i=0;i<${#a[@]};i++)); do
 		if [[ ${k[$i]} == ${c^^} ]]; then
-			startx `cat "/usr/share/xsessions/${a[$i]}"|awk -F 'Exec=' '{print $2}'`
+			startx `awk -F 'Exec=' '{print $2}' "/usr/share/xsessions/${a[$i]}"`
 		fi
 	done
-	echo ""
+	echo ''
 fi
