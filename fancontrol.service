@@ -1,0 +1,11 @@
+[Unit]
+Description=Poweredge Fan Control
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/bin/bash /home/woa/cloned-repos/linux-garbage/fancontrol.sh
+
+[Install]
+WantedBy=multi-user.target
+

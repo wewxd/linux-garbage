@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# align all monitors by the bottom, set largest as primary,
+# put laptop monitor on the left and order the others from left to right from largest to smallest
+
+laptop_monitor='eDP-1'
+
+xrstr="`xrandr | grep -Pv 'clock|HSync'`"
+maxheight=0
+lshift=0
+monitors=(`grep ' con' <<< "$xrstr" | grep -Po '^.*? '`)
+for m in "${monitors[@]}"; do
+    res+="`awk /"^$m"'/{flag=1;next}/con/{flag=0}flag' <<< $xrstr | grep '\+' | grep -Po '\d+x\d+'` $m"$'\n'
+    height="`tail -2 <<< "$res" | grep -Po '\d+' | head -2 | tail -1`"
+    (( "$height" > "$maxheight" )) && maxheight="$height" && largest="$m"
+done
+res="${res::-1}"
+res="`grep "$laptop_monitor" <<< "$res"`"$'\n'"`grep -v "$laptop_monitor" <<< "$res" | sort -rn`"
+while read l; do
+    height="`grep -Po '\d+' <<< "$l" | head -2 | tail -1`"
+    str+="--output`grep -o ' .*$' <<< "$l"` --auto --pos ${lshift}x$(( $maxheight - $height )) "
+    [[ " $largest" == `grep -o ' .*$' <<< "$l"` ]] && str+="--primary "
+    lshift=$(( "$lshift" + `grep -Po '\d+' <<< "$l" | head -1` ))
+done <<< "$res"
+echo "xrandr $str"
+xrandr $str
+exec i3-msg restart
+
+
+##!/bin/bash
+#
+## turns off every monitors except the largest
+#
+#xrstr="`xrandr`"
+#monitors=(`grep ' con' <<< "$xrstr" | grep -Po '^.*? '`)
+#maxwidth=0
+#for m in "${monitors[@]}"; do
+#    width="`awk /"$m"'/{flag=1;next}/con/{flag=0}flag' <<< $xrstr | grep '\+' | grep -Po '\d+' | head -1`"
+#    if (( "$width" > "$maxwidth" )); then
+#        maxwidth="$width"
+#        [[ -n "$act" ]] && str+="--output $act --off "
+#        act="$m"
+#    else
+#        str+="--output $m --off "
+#    fi
+#done
+#str+="--output $act --auto"
+#echo "xrandr $str"
+#xrandr $str
+#i3-msg restart
+

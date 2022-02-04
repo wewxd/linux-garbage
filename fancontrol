@@ -1,0 +1,26 @@
+#!/bin/bash
+
+temps=(30 40 50 75)
+fans=(0 5 15 50 100)
+interval=5
+
+ipmitool raw 0x30 0x30 0x01 0x00
+temps+=(200)
+fans+=(100)
+while true; do
+	temp=$(sensors | grep Core | awk '{print $3}' | grep -Po '\d{2}' | awk '{total+=$1;count++} END {print total/count}')
+	for i in ${!temps[@]}; do
+		if (( `bc -l <<< "$temp <= ${temps[i]}"` )); then
+			if [ $i = 0 ]; then
+				fanspeed=0
+			else
+				im=$((i-1))
+				fanspeed=$(bc -l <<< "($temp-${temps[im]}) / (${temps[i]}-${temps[im]}) * (${fans[i]}-${fans[im]}) + ${fans[im]}" | grep -Po '^\d+')
+			fi
+			echo "Temp: $temp°C, manual fans $fanspeed%"
+			ipmitool raw 0x30 0x30 0x02 0xff 0x`printf '%x' $fanspeed` 2> /dev/null
+			break
+		fi
+	done
+	sleep $interval
+done
