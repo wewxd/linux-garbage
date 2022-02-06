@@ -1,7 +1,8 @@
+
 #!/bin/bash
 
 temps=(30 40 50 75)
-fans=(0 5 15 50 100)
+fans=(0 5 15 100)
 interval=5
 
 ipmitool raw 0x30 0x30 0x01 0x00
@@ -15,7 +16,9 @@ while true; do
 				fanspeed=0
 			else
 				im=$((i-1))
-				fanspeed=$(bc -l <<< "($temp-${temps[im]}) / (${temps[i]}-${temps[im]}) * (${fans[i]}-${fans[im]}) + ${fans[im]}" | grep -Po '^\d+')
+				fanspeed=$(bc -l <<< "($temp-${temps[im]}) / (${temps[i]}-${temps[im]}) * (${fans[i]}-${fans[im]}) + ${fans[im]}" \
+                    | grep -Po '^\d+' \
+                    || echo 0)
 			fi
 			echo "Temp: $temp°C, manual fans $fanspeed%"
 			ipmitool raw 0x30 0x30 0x02 0xff 0x`printf '%x' $fanspeed` 2> /dev/null
