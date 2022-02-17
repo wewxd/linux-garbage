@@ -1,6 +1,6 @@
 #!/bin/bash
 
-temps=(30 40 50 75)
+temps=(30 40 50 70)
 fans=(0 5 15 100)
 interval=5
 

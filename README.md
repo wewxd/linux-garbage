@@ -4,12 +4,14 @@ I didn't want a graphical display manager, and i wanted the display manager to o
 If you want to use it you can disable your actual display manager and append the script to ~/.bash_profile or /etc/profile
 
 ## Poweredge Fan Control
-Script controling the fan speed for Dell Poweredge servers.
+Script controling the fan speed for Dell Poweredge servers.  
+  
+The script requires `ipmitool`, `lm_sensors` and `bc`, which should probably be in your distro's package manager.
 Edit line 3-5 of `fancontrol` to change fan speed according to temperature.
 With current config, the fans will be at 0% below 30°C, 3% at 36°C, 5% at 40°C, etc.
 `interval` is the delay between temperature checks.  
   
-You can make it a service by editing `fancontrol.service` with the script's path, 
+You can make it a service by editing `fancontrol.service` with the script's path on line 7, 
 and putting it in `/etc/systemd/system`.
 Then start it like any service, `systemctl start fancontrol`
 

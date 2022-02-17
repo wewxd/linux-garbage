@@ -4,7 +4,8 @@ Description=Poweredge Fan Control
 [Service]
 Type=simple
 Restart=always
-ExecStart=/bin/bash /home/woa/cloned-repos/linux-garbage/fancontrol.sh
+ExecStart=/bin/bash /home/woa/cloned-repos/linux-garbage/fancontrol
+ExecStopPost=/usr/bin/ipmitool raw 0x30 0x30 0x01 0x01
 
 [Install]
 WantedBy=multi-user.target
